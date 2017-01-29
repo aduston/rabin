@@ -243,12 +243,12 @@ func RabinFingerprintFixed(data []byte) (fp uint64) {
 //
 // P(t) is kIrreduciblePolyCoeffs
 // See rabin.tex (Basic Operations) for an explanation.
-func makePowerTable(basePower int) *[64]uint64 {
+func makePowerTable(basePower int, irreduciblePolyCoeffs uint64) *[64]uint64 {
 	powerTable := &[64]uint64{}
 
 	// t^k mod P(t) = P(t) + t^k.  Note that degree(P(t)) = 64 and that
 	// kIrreduciblePolyCoeffs does not include the implied t^64 term.
-	pTk := uint64(kIrreduciblePolyCoeffs)
+	pTk := irreduciblePolyCoeffs
 
 	// We always start from t^64.  Polynomials of degree < 64 are trivially
 	// determined, since deg(P(t)) = 64.
@@ -315,8 +315,8 @@ func makeTables32Raw(powerTable *[64]uint64) (tables *[4][256]uint64) {
 	return tables
 }
 
-func makeRabinTables32() *rabinTables32 {
-	rawTables := makeRabinTables32Raw()
+func makeRabinTables32(irreduciblePolyCoeffs uint64) *rabinTables32 {
+	rawTables := makeRabinTables32Raw(irreduciblePolyCoeffs)
 	return &rabinTables32{
 		raw: rawTables,
 		t64: &rawTables[0],
@@ -327,8 +327,8 @@ func makeRabinTables32() *rabinTables32 {
 }
 
 // windowSize is in bytes.
-func makeRabinRollingTables32(windowSize int) *rabinRollingTables32 {
-	rawTables := makeRabinRollingTables32Raw(windowSize)
+func makeRabinRollingTables32(windowSize int, irreduciblePolyCoeffs uint64) *rabinRollingTables32 {
+	rawTables := makeRabinRollingTables32Raw(windowSize, irreduciblePolyCoeffs)
 	return &rabinRollingTables32{
 		t8m0:  &rawTables[0],
 		t8m8:  &rawTables[1],
@@ -339,19 +339,19 @@ func makeRabinRollingTables32(windowSize int) *rabinRollingTables32 {
 
 // windowSize is the number of bytes for the window.  This generates 4
 // tables for a 32-bit word starting at t^{8*size}.
-func makeRabinRollingTables32Raw(windowSize int) (tables *[4][256]uint64) {
-	powerTable := makePowerTable(8 * windowSize)
+func makeRabinRollingTables32Raw(windowSize int, irreduciblePolyCoeffs uint64) (tables *[4][256]uint64) {
+	powerTable := makePowerTable(8*windowSize, irreduciblePolyCoeffs)
 	return makeTables32Raw(powerTable)
 }
 
 // T64 is [0].
-func makeRabinTables32Raw() *[4][256]uint64 {
-	powerTable := makePowerTable(64)
+func makeRabinTables32Raw(irreduciblePolyCoeffs uint64) *[4][256]uint64 {
+	powerTable := makePowerTable(64, irreduciblePolyCoeffs)
 	return makeTables32Raw(powerTable)
 }
 
-func makeRabinTables64() *rabinTables64 {
-	rawTables := makeRabinTables64Raw()
+func makeRabinTables64(irreduciblePolyCoeffs uint64) *rabinTables64 {
+	rawTables := makeRabinTables64Raw(irreduciblePolyCoeffs)
 	return &rabinTables64{
 		raw:  rawTables,
 		t64:  &rawTables[0],
@@ -366,8 +366,8 @@ func makeRabinTables64() *rabinTables64 {
 }
 
 // T64 is [0]
-func makeRabinTables64Raw() (tables *[8][256]uint64) {
-	powerTable := makePowerTable(64)
+func makeRabinTables64Raw(irreduciblePolyCoeffs uint64) (tables *[8][256]uint64) {
+	powerTable := makePowerTable(64, irreduciblePolyCoeffs)
 
 	tables = &[8][256]uint64{}
 	for ii := 0; ii < 256; ii++ {

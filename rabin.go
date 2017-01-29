@@ -51,7 +51,7 @@ type digest struct {
 
 func New() hash.Hash64 {
 	hash := new(digest)
-	hash.kTables = makeRabinTables32()
+	hash.kTables = makeRabinTables32(kIrreduciblePolyCoeffs)
 	return hash
 }
 
@@ -60,8 +60,8 @@ func New() hash.Hash64 {
 func NewRolling(windowSize int) RollingHash {
 	hash := new(digest)
 	hash.windowSize = windowSize
-	hash.kTables = makeRabinTables32()
-	hash.rollingTables = makeRabinRollingTables32(windowSize)
+	hash.kTables = makeRabinTables32(kIrreduciblePolyCoeffs)
+	hash.rollingTables = makeRabinRollingTables32(windowSize, kIrreduciblePolyCoeffs)
 	return hash
 }
 

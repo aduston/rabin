@@ -114,7 +114,7 @@ func Test_IrreducibleUint64(t *testing.T) {
 func Test_PowerTable(t *testing.T) {
 	p := NewPolynomialFromUint64(kIrreduciblePolyDegree, kIrreduciblePolyCoeffs)
 	// Offset by a little bit to test forwarding.
-	pt := makePowerTable(70)
+	pt := makePowerTable(70, kIrreduciblePolyCoeffs)
 	for ii := 0; ii < len(pt); ii++ {
 		coeffs := new(big.Int)
 		coeffs.SetBit(coeffs, 70+ii, 1)
@@ -131,7 +131,7 @@ func Test_PowerTable(t *testing.T) {
 func Test_MakeTables32(t *testing.T) {
 	p := NewPolynomialFromUint64(kIrreduciblePolyDegree, kIrreduciblePolyCoeffs)
 	cmp := MakeRabinTables32FromPoly(p)
-	tables := makeRabinTables32Raw()
+	tables := makeRabinTables32Raw(kIrreduciblePolyCoeffs)
 	for ii := 0; ii < 4; ii++ {
 		for jj := 0; jj < 256; jj++ {
 			vCmp := cmp[ii][jj]
@@ -160,7 +160,7 @@ func Test_RabinRollingTables32(t *testing.T) {
 
 	basePower := 128 * 8
 
-	tables := makeRabinRollingTables32(128)
+	tables := makeRabinRollingTables32(128, kIrreduciblePolyCoeffs)
 	for ii := 0; ii < 256; ii++ {
 		checkCoeffs(tables.t8m0[ii], basePower, byte(ii))
 		checkCoeffs(tables.t8m8[ii], basePower+8, byte(ii))
@@ -172,7 +172,7 @@ func Test_RabinRollingTables32(t *testing.T) {
 func Test_MakeTables64(t *testing.T) {
 	p := NewPolynomialFromUint64(kIrreduciblePolyDegree, kIrreduciblePolyCoeffs)
 	cmp := MakeRabinTables64FromPoly(p)
-	tables := makeRabinTables64Raw()
+	tables := makeRabinTables64Raw(kIrreduciblePolyCoeffs)
 	for ii := 0; ii < 8; ii++ {
 		for jj := 0; jj < 256; jj++ {
 			vCmp := cmp[ii][jj]
@@ -186,7 +186,7 @@ func Test_MakeTables64(t *testing.T) {
 
 func Benchmark_MakeTables32(b *testing.B) {
 	for ii := 0; ii < b.N; ii++ {
-		makeRabinTables32()
+		makeRabinTables32(kIrreduciblePolyCoeffs)
 	}
 }
 

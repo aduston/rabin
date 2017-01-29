@@ -19,7 +19,7 @@ type digest64 struct {
 }
 
 func init() {
-	kTables64 = makeRabinTables64()
+	kTables64 = makeRabinTables64(kIrreduciblePolyCoeffs)
 }
 
 func New64() hash.Hash64 {
