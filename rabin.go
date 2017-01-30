@@ -58,10 +58,16 @@ func New() hash.Hash64 {
 // windowSize in bytes.  A table will be pre-computed, so a non-negligible setup
 // cost occurs for each rolling hash construction.
 func NewRolling(windowSize int) RollingHash {
+	return NewRollingFromPolynomial(windowSize, kIrreduciblePolyCoeffs)
+}
+
+// windowSize in bytes.  A table will be pre-computed, so a non-negligible setup
+// cost occurs for each rolling hash construction.
+func NewRollingFromPolynomial(windowSize int, polyCoeffs uint64) RollingHash {
 	hash := new(digest)
 	hash.windowSize = windowSize
-	hash.kTables = makeRabinTables32(kIrreduciblePolyCoeffs)
-	hash.rollingTables = makeRabinRollingTables32(windowSize, kIrreduciblePolyCoeffs)
+	hash.kTables = makeRabinTables32(polyCoeffs)
+	hash.rollingTables = makeRabinRollingTables32(windowSize, polyCoeffs)
 	return hash
 }
 
